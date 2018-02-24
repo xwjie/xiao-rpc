@@ -3,6 +3,7 @@
 	<name>rpcserver</name>
 	<comment></comment>
 	<projects>
+		<project>xiaorpc</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

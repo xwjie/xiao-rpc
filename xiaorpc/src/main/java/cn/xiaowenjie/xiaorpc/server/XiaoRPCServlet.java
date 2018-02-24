@@ -1,24 +1,23 @@
-package cn.xiaowenjie;
+package cn.xiaowenjie.xiaorpc.server;
 
-import javax.servlet.Servlet;
+import java.io.IOException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-
-import cn.xiaowenjie.xiaorpc.server.XiaoRPCServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Servlet implementation class ApiServlet
  */
-@WebServlet("/xiaorpc")
-public class ApiServlet extends XiaoRPCServlet {
+public class XiaoRPCServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public ApiServlet() {
+	public XiaoRPCServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -51,6 +50,18 @@ public class ApiServlet extends XiaoRPCServlet {
 	public String getServletInfo() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * FIXME 有了service方法就不会进入doGet等方法
+	 * 
+	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected final void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		System.out.println("ApiServlet.service()");
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 }
