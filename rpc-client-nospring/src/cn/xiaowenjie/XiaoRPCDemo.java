@@ -12,8 +12,8 @@ public class XiaoRPCDemo {
 
 	public static void main(String[] args) throws URISyntaxException {
 		XiaoProxyFactory factory = new XiaoProxyFactory();
-		
-		String url = "http://localhost:8080/nospringserver/api/config";
+
+		String url = "http://localhost:8080/rpc-server-nospring/xiaorpc";
 
 		IConfigService configService = (IConfigService) factory.create(url, IConfigService.class);
 
@@ -23,15 +23,14 @@ public class XiaoRPCDemo {
 		config.setValue("新的配置项的值");
 
 		ResultBean<Long> addResult = configService.addConfig(config);
-		System.out.println(addResult);
+		System.out.println("addConfig:" + addResult);
 
 		ResultBean<Collection<Config>> all = configService.getAll();
-		System.out.println(all);
+		System.out.println("getAll:" + all);
 
 		// 把刚刚新建的删除掉
 		ResultBean<Boolean> deleteResult = configService.delete(addResult.getData());
-		System.out.println(deleteResult);
-
+		System.out.println("deleteResult:" + deleteResult);
 	}
 
 }

@@ -18,14 +18,22 @@ import org.apache.http.impl.client.HttpClients;
 
 public class XiaoProxyFactory implements ObjectFactory {
 
+	private final ClassLoader _loader;
+
+	public XiaoProxyFactory() {
+		this._loader = Thread.currentThread().getContextClassLoader();
+	}
+
 	public Object create(String url, Class<?> service) throws URISyntaxException {
-
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
 		HttpClient httpClient = HttpClients.createDefault();
+
+		return create(url, service, httpClient);
+	}
+
+	public Object create(String url, Class<?> service, HttpClient httpClient) throws URISyntaxException {
 		InvocationHandler handler = new XiaoInvocationHandler(new URI(url), httpClient);
 
-		return Proxy.newProxyInstance(loader, new Class<?>[] { service }, handler);
+		return Proxy.newProxyInstance(this._loader, new Class<?>[] { service }, handler);
 	}
 
 	/**
@@ -35,34 +43,34 @@ public class XiaoProxyFactory implements ObjectFactory {
 			throws Exception {
 		Reference ref = (Reference) obj;
 
-	    String api = null;
-	    String url = null;
-	    
-	    for (int i = 0; i < ref.size(); i++) {
-	      RefAddr addr = ref.get(i);
+		String api = null;
+		String url = null;
 
-	      String type = addr.getType();
-	      String value = (String) addr.getContent();
+		for (int i = 0; i < ref.size(); i++) {
+			RefAddr addr = ref.get(i);
 
-	      if (type.equals("type"))
-	        api = value;
-	      else if (type.equals("url"))
-	        url = value;
-	      //else if (type.equals("user"))
-	        //setUser(value);
-	      //else if (type.equals("password"))
-	        //setPassword(value);
-	    }
+			String type = addr.getType();
+			String value = (String) addr.getContent();
 
-	    if (url == null)
-	      throw new NamingException("`url' must be configured for HessianProxyFactory.");
-	    // XXX: could use meta protocol to grab this
-	    if (api == null)
-	      throw new NamingException("`type' must be configured for HessianProxyFactory.");
+			if (type.equals("type"))
+				api = value;
+			else if (type.equals("url"))
+				url = value;
+			// else if (type.equals("user"))
+			// setUser(value);
+			// else if (type.equals("password"))
+			// setPassword(value);
+		}
 
-	    Class apiClass = Class.forName(api, false, _loader);
+		if (url == null)
+			throw new NamingException("`url' must be configured for HessianProxyFactory.");
+		// XXX: could use meta protocol to grab this
+		if (api == null)
+			throw new NamingException("`type' must be configured for HessianProxyFactory.");
 
-	    return create(apiClass, url);
+		Class apiClass = Class.forName(api, false, _loader);
+
+		return create(url, apiClass);
 	}
 
 }

@@ -1,25 +1,41 @@
 package cn.xiaowenjie.xiaorpc.server;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import cn.xiaowenjie.xiaorpc.beans.InvokeInfo;
+import cn.xiaowenjie.xiaorpc.serialize.ISerialize;
+import cn.xiaowenjie.xiaorpc.serialize.KcyoSerialize;
+import lombok.SneakyThrows;
 
 /**
  * Servlet implementation class ApiServlet
  */
 public class XiaoRPCServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private Class<?> serverClass;
+	private Object serverTaget;
+	private ISerialize serializeTool;
+	private final Map<String, Method> methodMap;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public XiaoRPCServlet() {
 		super();
-		// TODO Auto-generated constructor stub
+
+		this.serializeTool = KcyoSerialize.getInstance();
+		this.methodMap = new HashMap<String, Method>();
 	}
 
 	/**
@@ -53,15 +69,91 @@ public class XiaoRPCServlet extends HttpServlet {
 	}
 
 	/**
-	 * FIXME ����service�����Ͳ������doGet�ȷ���
+	 * FIXME 有了service方法就不会进入doGet等方法
 	 * 
 	 * @see HttpServlet#service(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected final void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.out.println("ApiServlet.service()");
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		ServletConfig servletConfig = getServletConfig();
+		System.out.println("ApiServlet.service():" + servletConfig);
+
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
+
+		if (!req.getMethod().equals("POST")) {
+			res.setStatus(500); // , "Hessian Requires POST");
+			PrintWriter out = res.getWriter();
+
+			res.setContentType("text/html");
+			out.println("<h1>Xiao RPC Requires POST</h1>");
+
+			return;
+		}
+
+		// 调用方法并得到返回值
+		Object result = invoke(req);
+
+		this.serializeTool.write(response.getOutputStream(), result);
+		response.flushBuffer();
+		// response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	@SneakyThrows
+	private Object invoke(HttpServletRequest req) {
+		// 得到要服务的类名和实例
+		this.serverTaget = doGetServerTarget();
+
+		// 得到要调用的方法和参数
+		InvokeInfo invokeInfo = (InvokeInfo) this.serializeTool.read(req.getInputStream(), InvokeInfo.class);
+
+		// 得到对于的方法
+		Method method = getMethod(invokeInfo);
+
+		Object result = method.invoke(this.serverTaget, invokeInfo.getParams());
+		
+		System.out.println("服务反射调用方法，执行结果：" + result);
+		
+		return result;
+	}
+
+	private Object doGetServerTarget() {
+		Object obj = getServerTarget();
+
+		// TODO 从配置里面获取
+		if (obj == null) {
+
+		}
+
+		return obj;
+	}
+
+	protected Object getServerTarget() {
+		return null;
+	}
+
+	/**
+	 * 根据方法名和参数列表，找到对应的方法
+	 * @param invokeInfo
+	 * @return
+	 */
+	@SneakyThrows
+	private Method getMethod(InvokeInfo invokeInfo) {
+		Object[] params = invokeInfo.getParams();
+
+		Class<?>[] parameterTypes = null;
+
+		if (params != null) {
+			parameterTypes = new Class<?>[params.length];
+
+			for (int i = 0; i < params.length; i++) {
+				parameterTypes[i] = params[i].getClass();
+			}
+		}
+
+		Method method = this.serverTaget.getClass().getMethod(invokeInfo.getMethod(), parameterTypes);
+		return method;
 	}
 
 }

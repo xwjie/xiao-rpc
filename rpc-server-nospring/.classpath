@@ -14,5 +14,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/xiaorpc"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/rpc-service-common"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

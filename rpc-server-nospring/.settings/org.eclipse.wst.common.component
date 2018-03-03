@@ -5,6 +5,9 @@
         <dependent-module archiveName="xiaorpc.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/xiaorpc/xiaorpc">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="rpc-service-common.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/rpc-service-common/rpc-service-common">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="rpc-server-nospring"/>
         <property name="java-output-path" value="/rpc-server-nospring/build/classes"/>
     </wb-module>

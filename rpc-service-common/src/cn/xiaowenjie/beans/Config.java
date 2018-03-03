@@ -33,4 +33,10 @@ public class Config implements Serializable {
 	private long id;
 
 	private String name, value;
+
+	@Override
+	public String toString() {
+		return "Config [id=" + id + ", name=" + name + ", value=" + value + "]";
+	}
+
 }
