@@ -91,8 +91,9 @@ public class XiaoRPCServlet extends HttpServlet {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
+		// 只允许post方法
 		if (!req.getMethod().equals("POST")) {
-			res.setStatus(500); // , "Hessian Requires POST");
+			res.setStatus(500); 
 			PrintWriter out = res.getWriter();
 
 			res.setContentType("text/html");
@@ -104,6 +105,7 @@ public class XiaoRPCServlet extends HttpServlet {
 		// 调用方法并得到返回值
 		Object result = invoke(req);
 
+		// 写过去
 		this.serializeTool.write(response.getOutputStream(), result);
 		response.flushBuffer();
 		// response.getWriter().append("Served at: ").append(request.getContextPath());
@@ -116,7 +118,7 @@ public class XiaoRPCServlet extends HttpServlet {
 		// 得到要调用的方法和参数
 		InvokeInfo invokeInfo = (InvokeInfo) this.serializeTool.read(req.getInputStream());
 
-		// 得到对于的方法
+		// 得到对应的方法
 		Method method = getMethod(invokeInfo);
 
 		Object result = method.invoke(this.serverTaget, invokeInfo.getParams());
@@ -137,12 +139,19 @@ public class XiaoRPCServlet extends HttpServlet {
 		return obj;
 	}
 
+	/**
+	 * 让子类重写返回提供服务的类
+	 * 
+	 * @return
+	 */
 	protected Object getServerTarget() {
 		return null;
 	}
 
 	/**
 	 * 根据方法名和参数列表，找到对应的方法
+	 * FIXME 应该加缓存
+	 * FIXME 裝箱类型会报错
 	 * 
 	 * @param invokeInfo
 	 * @return

@@ -37,6 +37,7 @@ public class XiaoProxyFactory implements ObjectFactory {
 	}
 
 	/**
+	 * copy from hessian
 	 * JNDI object factory so the proxy can be used as a resource.
 	 */
 	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)

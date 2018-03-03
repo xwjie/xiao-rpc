@@ -1,9 +1,13 @@
 package cn.xiaowenjie.xiaorpc.beans;
 
-import java.util.Arrays;
-
 import lombok.Data;
 
+/**
+ * 调用信息封装类
+ * 
+ * @author Administrator
+ *
+ */
 @Data
 public class InvokeInfo {
 

@@ -51,9 +51,17 @@ public class XiaoInvocationHandler implements InvocationHandler {
 		return result;
 	}
 
+	/**
+	 * 构建http请求，把调用方法和参数封装后序列化发送过去
+	 * 
+	 * @param method
+	 * @param args
+	 * @return
+	 */
 	private HttpUriRequest generateRequest(Method method, Object[] args) {
-		final InvokeInfo invokeInfo = toInvokeInfo(method, args);
+		final InvokeInfo invokeInfo = genurateInvokeInfo(method, args);
 
+		// 构建http请求
 		HttpPost httpPost = new HttpPost(this.uri);
 
 		// 请求里面把字节码写过去
@@ -67,7 +75,7 @@ public class XiaoInvocationHandler implements InvocationHandler {
 		return httpPost;
 	}
 
-	private InvokeInfo toInvokeInfo(Method method, Object[] args) {
+	private InvokeInfo genurateInvokeInfo(Method method, Object[] args) {
 		InvokeInfo info = new InvokeInfo();
 
 		info.setMethod(method.getName());
