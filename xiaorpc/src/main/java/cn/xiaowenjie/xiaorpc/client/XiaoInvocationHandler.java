@@ -38,15 +38,11 @@ public class XiaoInvocationHandler implements InvocationHandler {
 		HttpUriRequest request = generateRequest(method, args);
 		// HttpResponse response = httpClient.execute(request);
 
-		final Class<?> returnType = method.getReturnType();
-
-		System.out.println("returnType:" + returnType);
-
 		// 执行的得到返回值
 		Object result = httpClient.execute(request, new ResponseHandler<Object>() {
 
 			public Object handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-				return serializeTool.read(response.getEntity().getContent(), returnType);
+				return serializeTool.read(response.getEntity().getContent());
 			}
 		});
 

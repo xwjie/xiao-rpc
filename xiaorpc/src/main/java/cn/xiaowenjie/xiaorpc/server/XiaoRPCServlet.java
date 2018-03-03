@@ -36,6 +36,16 @@ public class XiaoRPCServlet extends HttpServlet {
 
 		this.serializeTool = KcyoSerialize.getInstance();
 		this.methodMap = new HashMap<String, Method>();
+		
+		initTarget();
+	}
+
+	/**
+	 * 得到提供服务的类
+	 */
+	private void initTarget() {
+		// 得到要服务的类名和实例
+		this.serverTaget = doGetServerTarget();
 	}
 
 	/**
@@ -76,8 +86,7 @@ public class XiaoRPCServlet extends HttpServlet {
 	 */
 	protected final void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		ServletConfig servletConfig = getServletConfig();
-		System.out.println("ApiServlet.service():" + servletConfig);
+		System.out.println("ApiServlet.service() ...");
 
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
@@ -98,23 +107,22 @@ public class XiaoRPCServlet extends HttpServlet {
 		this.serializeTool.write(response.getOutputStream(), result);
 		response.flushBuffer();
 		// response.getWriter().append("Served at: ").append(request.getContextPath());
+
+		System.out.println();
 	}
 
 	@SneakyThrows
 	private Object invoke(HttpServletRequest req) {
-		// 得到要服务的类名和实例
-		this.serverTaget = doGetServerTarget();
-
 		// 得到要调用的方法和参数
-		InvokeInfo invokeInfo = (InvokeInfo) this.serializeTool.read(req.getInputStream(), InvokeInfo.class);
+		InvokeInfo invokeInfo = (InvokeInfo) this.serializeTool.read(req.getInputStream());
 
 		// 得到对于的方法
 		Method method = getMethod(invokeInfo);
 
 		Object result = method.invoke(this.serverTaget, invokeInfo.getParams());
-		
+
 		System.out.println("服务反射调用方法，执行结果：" + result);
-		
+
 		return result;
 	}
 
@@ -135,6 +143,7 @@ public class XiaoRPCServlet extends HttpServlet {
 
 	/**
 	 * 根据方法名和参数列表，找到对应的方法
+	 * 
 	 * @param invokeInfo
 	 * @return
 	 */

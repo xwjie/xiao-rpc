@@ -5,7 +5,7 @@ import java.io.OutputStream;
 
 public interface ISerialize {
 
-	Object read(InputStream is, Class<?> cls);
+	Object read(InputStream is);
 
 	void write(OutputStream os, Object obj);
 }

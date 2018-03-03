@@ -20,7 +20,7 @@ public class KcyoSerialize implements ISerialize {
 		return instance;
 	}
 
-	public Object read(InputStream is, Class<?> cls) {
+	public Object read(InputStream is) {
 		Input input = new Input(is);
 		try {
 			Object obj = kryo.readClassAndObject(input);

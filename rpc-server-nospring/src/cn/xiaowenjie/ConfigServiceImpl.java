@@ -41,7 +41,7 @@ public class ConfigServiceImpl implements IConfigService {
 		// cannot be created (missing no-arg constructor):
 		// java.util.concurrent.ConcurrentSkipListMap$Values
 		// return new ResultBean<>(configs.values());
-		
+
 		return new ResultBean<>(new ArrayList<>(configs.values()));
 	}
 
@@ -51,4 +51,16 @@ public class ConfigServiceImpl implements IConfigService {
 		return new ResultBean<>(configs.remove(id) != null);
 	}
 
+	public static void main(String[] args) {
+		ConfigServiceImpl c = new ConfigServiceImpl();
+
+		Config config = new Config();
+
+		c.addConfig(config);
+
+		System.out.println(c.configs.values().size());
+		System.out.println(new ArrayList<>(c.configs.values()).size());
+
+		System.out.println(c.getAll());
+	}
 }
